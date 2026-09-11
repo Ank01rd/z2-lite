@@ -14,7 +14,7 @@ class ZapretService extends ChangeNotifier {
 
   /// Репозиторий, в котором публикуются релизы ЭТОГО приложения
   /// (zip со сборкой Windows). Поменяй на свой, если релизы лежат иначе.
-  static const String appRepo = 'Ank01rd/z2_lite';   // было 'Ank01rd/ZapretManager'
+  static const String appRepo = 'Ank01rd/z2-lite';   // было 'Ank01rd/ZapretManager'
 
   /// Текущая версия приложения (синхронизируй с pubspec.yaml).
   static const String currentAppVersion = '1.0.0';
