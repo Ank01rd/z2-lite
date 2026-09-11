@@ -1,4 +1,4 @@
-# z2_mini_lite
+# z2_lite
 
 A new Flutter project.
 
