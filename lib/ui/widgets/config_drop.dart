@@ -76,9 +76,14 @@ class _ConfigDropButtonState extends State<ConfigDropButton>
     final fallback = (screen.height - panelTop - 10).clamp(96.0, 600.0);
     final maxH = widget.maxPanelHeightProvider?.call(context) ?? fallback;
 
+    // ── КЛЮЧЕВОЕ: захватываем тему ИЗ КОНТЕКСТА КНОПКИ (внутри AnimatedTheme),
+    // а не из OverlayEntry (который над MaterialApp и держит тему запуска).
+    final capturedTheme = Theme.of(context);
+
     final entry = OverlayEntry(
       builder: (entryCtx) {
-        final t = Theme.of(entryCtx);
+        // Используем захваченную тему, а НЕ Theme.of(entryCtx)
+        final t = capturedTheme;
         final side = BorderSide(color: t.dividerColor);
         return Stack(
           children: [
@@ -136,7 +141,7 @@ class _ConfigDropButtonState extends State<ConfigDropButton>
                             ).animate(_slide),
                             child: ConstrainedBox(
                               constraints: BoxConstraints(maxHeight: maxH),
-                              child: _panel(entryCtx),
+                              child: _panel(t),
                             ),
                           ),
                         ),
@@ -187,8 +192,8 @@ class _ConfigDropButtonState extends State<ConfigDropButton>
         ],
       );
 
-  Widget _panel(BuildContext ctx) {
-    final t = Theme.of(ctx);
+  // ── принимаем захваченную тему, а не читаем из контекста ──
+  Widget _panel(ThemeData t) {
     return Container(
       decoration: BoxDecoration(
         color: t.scaffoldBackgroundColor,
@@ -210,7 +215,7 @@ class _ConfigDropButtonState extends State<ConfigDropButton>
                       ?.copyWith(color: t.colorScheme.secondary)),
             )
           : ScrollConfiguration(
-              behavior: softScrollBehavior(ctx),
+              behavior: softScrollBehavior(context),
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(vertical: 2),

@@ -57,13 +57,19 @@ class Z2LiteApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Z2 Lite',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
-      themeMode: settings.darkTheme ? ThemeMode.dark : ThemeMode.light,
-      home: RootPage(settings: settings),
+    // Перестраиваем MaterialApp при изменении настроек: иначе оверлеи
+    // и роуты (дропдаун конфигов, диалоги) живут в корневом Overlay ВЫШЕ
+    // AnimatedTheme и держат тему, которая была при запуске.
+    return ListenableBuilder(
+      listenable: settings,
+      builder: (context, _) => MaterialApp(
+        title: 'Z2 Lite',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light(),
+        darkTheme: AppTheme.dark(),
+        themeMode: settings.darkTheme ? ThemeMode.dark : ThemeMode.light,
+        home: RootPage(settings: settings),
+      ),
     );
   }
 }

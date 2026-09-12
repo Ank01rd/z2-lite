@@ -3,7 +3,7 @@ name: z2_mini_lite
 description: Z2 Mini Lite - compact manager
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.2+3
 
 environment:
   sdk: ^3.3.0

@@ -17,7 +17,7 @@ class ZapretService extends ChangeNotifier {
   static const String appRepo = 'Ank01rd/z2-lite';   // было 'Ank01rd/ZapretManager'
 
   /// Текущая версия приложения (синхронизируй с pubspec.yaml).
-  static const String currentAppVersion = '1.0.0';
+  static const String currentAppVersion = '1.0.2';
 
   String _zapretDir = r'C:\zapret_programm';
   String get zapretDir => _zapretDir;
