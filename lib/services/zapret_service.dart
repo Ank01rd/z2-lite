@@ -17,7 +17,7 @@ class ZapretService extends ChangeNotifier {
   static const String appRepo = 'Ank01rd/z2-lite';   // было 'Ank01rd/ZapretManager'
 
   /// Текущая версия приложения (синхронизируй с pubspec.yaml).
-  static const String currentAppVersion = '1.0.2';
+  static const String currentAppVersion = '1.0.3';
 
   String _zapretDir = r'C:\zapret_programm';
   String get zapretDir => _zapretDir;
@@ -842,27 +842,37 @@ del /f /q "%~f0" >nul 2>nul
       final appDir = exe.parent.path;
       final exeName = exe.uri.pathSegments.last;
       final bat = File('${tmp.path}\\update.bat');
-      bat.writeAsStringSync('''
-@echo off
-setlocal
-set "APP_DIR=$appDir"
-set "SRC=$src"
-set "EXE=$exeName"
-:wait
-tasklist /FI "IMAGENAME eq %EXE%" 2>nul | find /I "%EXE%" >nul
-if %errorlevel%==0 (
-  timeout /t 1 /nobreak >nul
-  goto wait
-)
-xcopy /E /Y /I /Q "%SRC%\\*" "%APP_DIR%\\" >nul
-start "" "%APP_DIR%\\%EXE%"
-endlocal
-del /f /q "%~f0" 2>nul
-''');
+      // CRLF-переносы (cmd.exe требует именно их), БЕЗ самоудаления
+      // (удаление выполняемого bat роняет cmd в зависание),
+      // лимит 30 попыток (не висим вечно), окно скрытое.
+      final batLines = [
+        '@echo off',
+        'setlocal',
+        'set "APP_DIR=$appDir"',
+        'set "SRC=$src"',
+        'set "EXE=$exeName"',
+        'set /a tries=0',
+        ':wait',
+        'tasklist /FI "IMAGENAME eq %EXE%" 2>nul | find /I "%EXE%" >nul',
+        'if errorlevel 1 goto copy',
+        'timeout /t 1 /nobreak >nul',
+        'set /a tries+=1',
+        'if %tries% GEQ 30 goto copy',
+        'goto wait',
+        ':copy',
+        'xcopy /E /Y /I /Q "%SRC%\\*" "%APP_DIR%\\" >nul',
+        'start "" "%APP_DIR%\\%EXE%"',
+        'endlocal',
+        'exit /b 0',
+      ];
+      bat.writeAsStringSync(batLines.join('\r\n') + '\r\n');
 
-      onProgress?.call(null, Loc.t('otaRestart'));
-      await Process.start('cmd', ['/c', bat.path],
-          mode: ProcessStartMode.detached);
+            onProgress?.call(null, Loc.t('otaRestart'));
+      await Process.run('powershell', [
+        '-NoProfile',
+        '-Command',
+        'Start-Process -FilePath "${bat.path}" -WindowStyle Hidden'
+      ]);
       await Future.delayed(const Duration(milliseconds: 400));
       exit(0); // апдейтер подхватит после выхода
     } catch (e) {
