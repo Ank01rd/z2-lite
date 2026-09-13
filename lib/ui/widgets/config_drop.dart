@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import '../../core/app_localization.dart';
 import '../../core/app_theme.dart';
 import '../../core/lite_settings.dart';
@@ -17,10 +16,8 @@ ScrollBehavior softScrollBehavior(BuildContext context) =>
       scrollbars: false,
     );
 
-/// Пилюля конфигов: список выезжает из пилюли (слитно, без ступенек),
-/// ограничен низом карточки, закрывается кликом по пилюле / мимо / выбором.
-/// Анимация: рост панели (easeOutCubic / easeInCubic при закрытии) +
-/// лёгкий сдвиг контента вниз + поздний fade — выглядит «выливающимся».
+/// Пилюля конфигов: при открытии пилюля МОРАФИТСЯ в единую коробку
+/// (один контейнер, одна рамка, радиус 22 → 16), список выезжает внутри.
 class ConfigDropButton extends StatefulWidget {
   const ConfigDropButton({
     required this.settings,
@@ -29,7 +26,6 @@ class ConfigDropButton extends StatefulWidget {
     this.maxPanelHeightProvider,
     super.key,
   });
-
   final LiteSettings settings;
   final List<String> configs;
   final String? value;
@@ -43,15 +39,15 @@ class _ConfigDropButtonState extends State<ConfigDropButton>
     with SingleTickerProviderStateMixin {
   OverlayEntry? _entry;
   bool _overlayPill = false;
+
   late final AnimationController _ctrl = AnimationController(
-      duration: const Duration(milliseconds: 240), vsync: this);
+      duration: const Duration(milliseconds: 330), vsync: this);
   late final CurvedAnimation _size = CurvedAnimation(
       parent: _ctrl,
       curve: Curves.easeOutCubic,
       reverseCurve: Curves.easeInCubic);
   late final CurvedAnimation _fade = CurvedAnimation(
-      parent: _ctrl,
-      curve: const Interval(0.15, 0.85, curve: Curves.easeOut));
+      parent: _ctrl, curve: const Interval(0.15, 0.85, curve: Curves.easeOut));
   late final CurvedAnimation _slide = CurvedAnimation(
       parent: _ctrl,
       curve: const Interval(0.0, 0.9, curve: Curves.easeOutCubic));
@@ -75,16 +71,11 @@ class _ConfigDropButtonState extends State<ConfigDropButton>
     final panelTop = off.dy + box.size.height;
     final fallback = (screen.height - panelTop - 10).clamp(96.0, 600.0);
     final maxH = widget.maxPanelHeightProvider?.call(context) ?? fallback;
-
-    // ── КЛЮЧЕВОЕ: захватываем тему ИЗ КОНТЕКСТА КНОПКИ (внутри AnimatedTheme),
-    // а не из OverlayEntry (который над MaterialApp и держит тему запуска).
+    // захватываем тему ИЗ КОНТЕКСТА КНОПКИ (внутри AnimatedTheme)
     final capturedTheme = Theme.of(context);
-
     final entry = OverlayEntry(
       builder: (entryCtx) {
-        // Используем захваченную тему, а НЕ Theme.of(entryCtx)
         final t = capturedTheme;
-        final side = BorderSide(color: t.dividerColor);
         return Stack(
           children: [
             Positioned.fill(
@@ -101,52 +92,50 @@ class _ConfigDropButtonState extends State<ConfigDropButton>
               child: AnimatedBuilder(
                 animation: _ctrl,
                 builder: (c2, _) {
-                  final fused = _ctrl.value > 0.15;
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: GestureDetector(
-                          onTap: _close,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 13, vertical: 11),
-                            decoration: BoxDecoration(
-                              color: t.scaffoldBackgroundColor,
-                              borderRadius: fused
-                                  ? const BorderRadius.vertical(
-                                      top: Radius.circular(16))
-                                  : BorderRadius.circular(999),
-                              border: Border(
-                                top: side,
-                                left: side,
-                                right: side,
-                                bottom: fused ? BorderSide.none : side,
+                  // непрерывный морф: радиус 22 (пилюля) → 16 (коробка)
+                  final k = (_ctrl.value / 0.35).clamp(0.0, 1.0);
+                  final radius = 22 - 6 * k;
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: t.scaffoldBackgroundColor,
+                      borderRadius:
+                          BorderRadius.all(Radius.circular(radius)),
+                      border: Border.all(color: t.dividerColor),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: _close,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 13, vertical: 11),
+                              child: _row(t, up: k > 0.5),
+                            ),
+                          ),
+                        ),
+                        SizeTransition(
+                          sizeFactor: _size,
+                          axisAlignment: -1,
+                          child: FadeTransition(
+                            opacity: _fade,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0, -0.06),
+                                end: Offset.zero,
+                              ).animate(_slide),
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(maxHeight: maxH),
+                                child: _list(t),
                               ),
                             ),
-                            child: _row(t, up: fused),
                           ),
                         ),
-                      ),
-                      SizeTransition(
-                        sizeFactor: _size,
-                        axisAlignment: -1,
-                        child: FadeTransition(
-                          opacity: _fade,
-                          child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(0, -0.06),
-                              end: Offset.zero,
-                            ).animate(_slide),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(maxHeight: maxH),
-                              child: _panel(t),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   );
                 },
               ),
@@ -192,24 +181,13 @@ class _ConfigDropButtonState extends State<ConfigDropButton>
         ],
       );
 
-  // ── принимаем захваченную тему, а не читаем из контекста ──
-  Widget _panel(ThemeData t) {
-    return Container(
-      decoration: BoxDecoration(
-        color: t.scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
-        border: Border(
-          left: BorderSide(color: t.dividerColor),
-          right: BorderSide(color: t.dividerColor),
-          bottom: BorderSide(color: t.dividerColor),
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
+  /// Список БЕЗ собственной рамки/фона — всё рисует внешний контейнер.
+  Widget _list(ThemeData t) {
+    return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: widget.configs.isEmpty
           ? Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
               child: Text(Loc.t('noConfigs'),
                   style: t.textTheme.bodySmall
                       ?.copyWith(color: t.colorScheme.secondary)),
@@ -249,13 +227,11 @@ class _ConfigDropButtonState extends State<ConfigDropButton>
         child: GestureDetector(
           onTap: _open ? _close : _openMenu,
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
+            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
             decoration: BoxDecoration(
               color: theme.scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(999),
-              border:
-                  Border(top: side, left: side, right: side, bottom: side),
+              border: Border(top: side, left: side, right: side, bottom: side),
             ),
             child: _row(theme, up: false),
           ),
@@ -271,7 +247,6 @@ class _ConfigRow extends StatefulWidget {
     required this.selected,
     required this.onTap,
   });
-
   final String name;
   final bool selected;
   final VoidCallback onTap;
@@ -333,9 +308,8 @@ class _ConfigRowState extends State<_ConfigRow> {
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
                       fontSize: 12.5,
-                      fontWeight: widget.selected
-                          ? FontWeight.w700
-                          : FontWeight.w500),
+                      fontWeight:
+                          widget.selected ? FontWeight.w700 : FontWeight.w500),
                 ),
               ),
             ],

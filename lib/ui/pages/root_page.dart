@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/app_localization.dart';
 import '../../core/app_theme.dart';
 import '../../core/lite_settings.dart';
+import '../../services/zapret_service.dart';
 import '../widgets/app_title_bar.dart';
 import '../widgets/nav_pill.dart';
 import 'home_page.dart';
@@ -10,7 +11,6 @@ import 'settings_page.dart';
 
 class RootPage extends StatefulWidget {
   const RootPage({required this.settings, super.key});
-
   final LiteSettings settings;
 
   @override
@@ -39,7 +39,6 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     final data = widget.settings.darkTheme ? AppTheme.dark() : AppTheme.light();
-
     return AnimatedTheme(
       data: data,
       duration: AppTheme.animDuration,
@@ -94,14 +93,12 @@ class _RootPageState extends State<RootPage> {
                 ],
               ),
             ),
-            // ── еле заметная надпись в самом низу окна (не в карточке) ──
-            // ── еле заметная надпись в самом низу окна (не в карточке) ──
-            // ── еле заметная надпись в самом низу окна ──
+            // еле заметная надпись внизу: текст · точка · версия
             Padding(
               padding: const EdgeInsets.only(bottom: 5, top: 2),
               child: Center(
                 child: Text(
-                  Loc.t('footer'),
+                  '${Loc.t('footer')} · v${ZapretService.currentAppVersion}',
                   style: TextStyle(
                     fontSize: 10,
                     letterSpacing: 0.3,

@@ -11,12 +11,12 @@ import '../widgets/github_icon.dart';
 import '../widgets/mono_switch.dart';
 import '../widgets/progress_dialog.dart';
 import '../widgets/snack.dart';
+import '../widgets/telegram_icon.dart';
 
 const Color _danger = Color(0xFFE5484D);
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({required this.settings, super.key});
-
   final LiteSettings settings;
 
   @override
@@ -33,8 +33,7 @@ class SettingsPage extends StatelessWidget {
             border: Border.all(color: theme.dividerColor),
           ),
           child: ListenableBuilder(
-            listenable:
-                Listenable.merge([ZapretService.instance, settings]),
+            listenable: Listenable.merge([ZapretService.instance, settings]),
             builder: (context, _) {
               final svc = ZapretService.instance;
               return SingleChildScrollView(
@@ -65,14 +64,36 @@ class SettingsPage extends StatelessWidget {
                       value: settings.zapretAutostart,
                       onChanged: (v) async {
                         await settings.setZapretAutostart(v);
-                        final cfg =
+                        String? cfg =
                             svc.configs.contains(settings.selectedConfig)
                                 ? settings.selectedConfig
                                 : null;
-                        final msg = v
-                            ? await svc.installService(svc.zapretDir,
-                                config: cfg)
-                            : await svc.removeService(svc.zapretDir);
+                        cfg ??= svc.configs.any((c) =>
+                                c.toLowerCase().contains('general (alt)'))
+                            ? svc.configs.firstWhere((c) =>
+                                c.toLowerCase().contains('general (alt)'))
+                            : (svc.configs.isNotEmpty
+                                ? svc.configs.first
+                                : null);
+                        String msg;
+                        if (v) {
+                          if (cfg == null) {
+                            msg = Loc.t('msgNoConfigs');
+                          } else {
+                            final ok = await WindowsAutostart.installZapret(
+                                folder: svc.zapretDir, config: cfg);
+                            msg = ok
+                                ? '${Loc.t('msgAutostartSet')}: $cfg'
+                                : '${Loc.t('msgError')}: '
+                                    '${WindowsAutostart.lastError ?? '?'}';
+                          }
+                        } else {
+                          final ok = await WindowsAutostart.removeZapret();
+                          msg = ok
+                              ? Loc.t('msgAutostartRemoved')
+                              : '${Loc.t('msgError')}: '
+                                  '${WindowsAutostart.lastError ?? '?'}';
+                        }
                         if (context.mounted) showSnack(context, msg);
                       },
                     ),
@@ -92,7 +113,6 @@ class SettingsPage extends StatelessWidget {
                       onPressed: () => _checkAndShowUpdateDialog(context),
                     ),
                     _divider(context),
-                    // ── скачать Zapret: строка как все, С иконкой ──
                     _UpdateRow(
                       icon: Icons.download_rounded,
                       title: Loc.t('downloadZapret'),
@@ -108,7 +128,6 @@ class SettingsPage extends StatelessWidget {
                       },
                     ),
                     _divider(context),
-                    // ── удалить сервис: такая же строка, красный акцент ──
                     _UpdateRow(
                       icon: Icons.delete_forever_rounded,
                       title: Loc.t('removeService'),
@@ -124,8 +143,11 @@ class SettingsPage extends StatelessWidget {
                         ),
                         _LangToggle(
                           current: settings.language,
-                          onToggle: () => settings.setLanguage(
-                              settings.language == 'ru' ? 'en' : 'ru'),
+                          onToggle: () {
+                            const order = ['ru', 'en', 'es', 'de'];
+                            final i = order.indexOf(settings.language);
+                            settings.setLanguage(order[(i + 1) % order.length]);
+                          },
                         ),
                       ],
                     ),
@@ -138,31 +160,37 @@ class SettingsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     _PathField(svc: svc),
-                    const SizedBox(height: 14),
-                    // ── две кнопки GitHub по центру: zapret и наш проект ──
+                    const SizedBox(height: 10),
+                    // ── три компактные ссылки В ОДНУ СТРОКУ ──
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextButton.icon(
-                          onPressed: () => launchUrl(
-                            Uri.parse(
-                                'https://github.com/Flowseal/zapret-discord-youtube'),
-                            mode: LaunchMode.externalApplication,
-                          ),
+                        _LinkButton(
+                          tooltip: Loc.t('github'),
                           icon: GithubIcon(
-                              size: 16, color: theme.colorScheme.onSurface),
-                          label: Text(Loc.t('github')),
+                              size: 14, color: theme.colorScheme.onSurface),
+                          label: 'Zapret',
+                          url:
+                              'https://github.com/Flowseal/zapret-discord-youtube',
                         ),
-                        const SizedBox(width: 4),
-                        TextButton.icon(
-                          onPressed: () => launchUrl(
-                            Uri.parse(
-                                'https://github.com/${ZapretService.appRepo}'),
-                            mode: LaunchMode.externalApplication,
-                          ),
+                        const SizedBox(width: 2),
+                        _LinkButton(
+                          tooltip: 'GitHub · Z2 Lite',
                           icon: GithubIcon(
-                              size: 16, color: theme.colorScheme.onSurface),
-                          label: const Text('GitHub · Z2 Lite'),
+                              size: 14, color: theme.colorScheme.onSurface),
+                          label: 'Z2 Lite',
+                          url:
+                              'https://github.com/${ZapretService.appRepo}',
+                        ),
+                        const SizedBox(width: 2),
+                        _LinkButton(
+                          tooltip: 'Telegram',
+                          icon: TelegramIcon(
+                              size: 14, color: theme.colorScheme.onSurface),
+                          label: 'Telegram',
+                          // ЗАМЕНИ на свой ник Telegram, если другой
+                          url: 'https://t.me/Heckazhuk',
                         ),
                       ],
                     ),
@@ -281,6 +309,43 @@ class SettingsPage extends StatelessWidget {
       );
 }
 
+/// Компактная кнопка-ссылка: иконка 14 + короткий лейбл, тултип с полным именем.
+class _LinkButton extends StatelessWidget {
+  const _LinkButton({
+    required this.tooltip,
+    required this.icon,
+    required this.label,
+    required this.url,
+    super.key,
+  });
+  final String tooltip;
+  final Widget icon;
+  final String label;
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      waitDuration: const Duration(milliseconds: 400),
+      child: TextButton.icon(
+        onPressed: () => launchUrl(Uri.parse(url),
+            mode: LaunchMode.externalApplication),
+        icon: icon,
+        label: Text(
+          label,
+          style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600),
+        ),
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+      ),
+    );
+  }
+}
+
 class _SwitchRow extends StatelessWidget {
   const _SwitchRow({
     required this.icon,
@@ -288,7 +353,6 @@ class _SwitchRow extends StatelessWidget {
     required this.value,
     required this.onChanged,
   });
-
   final IconData icon;
   final String title;
   final bool value;
@@ -308,8 +372,6 @@ class _SwitchRow extends StatelessWidget {
   }
 }
 
-/// Строка-действие: иконка + заголовок, ховер-подсветка. Без стрелок.
-/// [color] — акцент (для опасных действий, напр. удаление сервиса).
 class _UpdateRow extends StatefulWidget {
   const _UpdateRow({
     required this.icon,
@@ -318,7 +380,6 @@ class _UpdateRow extends StatefulWidget {
     this.color,
     super.key,
   });
-
   final IconData icon;
   final String title;
   final VoidCallback onPressed;
@@ -382,7 +443,6 @@ class _LangToggle extends StatelessWidget {
     required this.onToggle,
     super.key,
   });
-
   final String current;
   final VoidCallback onToggle;
 
@@ -390,7 +450,7 @@ class _LangToggle extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Tooltip(
-      message: current == 'ru' ? 'Switch language: EN' : 'Язык: RU',
+      message: 'Language / Язык / Idioma / Sprache',
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
@@ -424,7 +484,6 @@ class _LangToggle extends StatelessWidget {
 
 class _PathField extends StatelessWidget {
   const _PathField({required this.svc});
-
   final ZapretService svc;
 
   @override

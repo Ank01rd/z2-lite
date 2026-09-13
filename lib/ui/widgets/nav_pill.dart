@@ -1,5 +1,5 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import '../../core/app_localization.dart';
 import '../../core/app_theme.dart';
 
@@ -7,55 +7,67 @@ enum AppPage { home, settings }
 
 class NavPill extends StatelessWidget {
   const NavPill({required this.current, required this.onSelect, super.key});
-
   final AppPage current;
   final ValueChanged<AppPage> onSelect;
 
   static const double _item = 44;
   static const double _gap = 4;
   static const double _pad = 5;
+  // быстрее глобальной анимации, но та же кривая — плавно и отзывчиво
+  static const Duration _dur = Duration(milliseconds: 270);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final idx = current == AppPage.home ? 0 : 1;
-
-    return Container(
-      padding: const EdgeInsets.all(_pad),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: theme.dividerColor),
-      ),
-      child: SizedBox(
-        width: _item,
-        height: _item * 2 + _gap,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            AnimatedPositioned(
-              duration: AppTheme.animDuration,
-              curve: AppTheme.animCurve,
-              top: idx == 0 ? 0 : _item + _gap,
-              left: 0,
-              width: _item,
-              height: _item,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary,
-                  shape: BoxShape.circle,
+    return Listener(
+      // колёсико мыши: вверх — главная, вниз — настройки
+      onPointerSignal: (e) {
+        if (e is PointerScrollEvent) {
+          if (e.scrollDelta.dy > 0) {
+            onSelect(AppPage.settings);
+          } else if (e.scrollDelta.dy < 0) {
+            onSelect(AppPage.home);
+          }
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(_pad),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: theme.dividerColor),
+        ),
+        child: SizedBox(
+          width: _item,
+          height: _item * 2 + _gap,
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              AnimatedPositioned(
+                duration: _dur,
+                curve: AppTheme.animCurve,
+                top: idx == 0 ? 0 : _item + _gap,
+                left: 0,
+                width: _item,
+                height: _item,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
-            ),
-            Column(
-              children: [
-                _icon(context, AppPage.home, Icons.home_rounded, 0, idx),
-                const SizedBox(height: _gap),
-                _icon(context, AppPage.settings, Icons.settings_rounded, 1,
-                    idx),
-              ],
-            ),
-          ],
+              Column(
+                children: [
+                  _icon(context, AppPage.home, Icons.home_rounded, 0, idx),
+                  const SizedBox(height: _gap),
+                  _icon(context, AppPage.settings, Icons.settings_rounded, 1,
+                      idx),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -78,7 +90,7 @@ class NavPill extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             onTap: () => onSelect(page),
             child: TweenAnimationBuilder<Color?>(
-              duration: AppTheme.animDuration,
+              duration: _dur,
               curve: AppTheme.animCurve,
               tween: ColorTween(
                 begin: active

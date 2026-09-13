@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,7 +29,12 @@ class LiteSettings extends ChangeNotifier {
   static Future<LiteSettings> load() async {
     final s = LiteSettings._();
     final p = await SharedPreferences.getInstance();
-    s._darkTheme = p.getBool(_kDark) ?? false;
+    // Первый запуск (ключа темы ещё нет): берём тему из Windows
+    if (!p.getKeys().contains(_kDark)) {
+      s._darkTheme = await _detectWindowsDark();
+    } else {
+      s._darkTheme = p.getBool(_kDark) ?? false;
+    }
     s._launchWithWindows = p.getBool(_kWin) ?? false;
     s._zapretAutostart = p.getBool(_kAuto) ?? false;
     s._selectedConfig = p.getString(_kCfg) ?? '';
@@ -36,10 +43,34 @@ class LiteSettings extends ChangeNotifier {
     return s;
   }
 
+  /// Читает тему приложений Windows: AppsUseLightTheme = 0 => тёмная.
+  static Future<bool> _detectWindowsDark() async {
+    try {
+      final r = await Process.run(
+        'reg.exe',
+        [
+          'query',
+          r'HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize',
+          '/v',
+          'AppsUseLightTheme',
+        ],
+        runInShell: false,
+      );
+      if (r.exitCode != 0) return false;
+      final m = RegExp(r'AppsUseLightTheme\s+REG_DWORD\s+0x([0-9a-fA-F]+)')
+          .firstMatch(r.stdout.toString());
+      if (m == null) return false;
+      return int.parse(m.group(1)!, radix: 16) == 0;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<void> setDarkTheme(bool v) => _update(() => _darkTheme = v);
   Future<void> setLaunchWithWindows(bool v) =>
       _update(() => _launchWithWindows = v);
-  Future<void> setZapretAutostart(bool v) => _update(() => _zapretAutostart = v);
+  Future<void> setZapretAutostart(bool v) =>
+      _update(() => _zapretAutostart = v);
   Future<void> setSelectedConfig(String v) =>
       _update(() => _selectedConfig = v);
   Future<void> setLanguage(String v) => _update(() {
