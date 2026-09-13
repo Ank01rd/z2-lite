@@ -3,7 +3,7 @@ name: z2_mini_lite
 description: Z2 Mini Lite - compact manager
 publish_to: 'none'
 
-version: 1.0.3+4
+version: 1.0.4+5
 
 environment:
   sdk: ^3.3.0
@@ -26,6 +26,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/github.svg
+    - assets/telegram.svg
 #  fonts:
 #    - family: TitleFont
 #      fonts:

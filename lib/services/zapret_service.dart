@@ -6,18 +6,18 @@ import 'package:flutter/foundation.dart';
 
 import '../core/app_localization.dart';
 
-/// Сервис + ChangeNotifier-состояние для UI.
-/// Все пользовательские строки — через Loc.t(...) / Loc.mode(...).
+/// РЎРµСЂРІРёСЃ + ChangeNotifier-СЃРѕСЃС‚РѕСЏРЅРёРµ РґР»СЏ UI.
+/// Р’СЃРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРµ СЃС‚СЂРѕРєРё вЂ” С‡РµСЂРµР· Loc.t(...) / Loc.mode(...).
 class ZapretService extends ChangeNotifier {
   ZapretService._();
   static final ZapretService instance = ZapretService._();
 
-  /// Репозиторий, в котором публикуются релизы ЭТОГО приложения
-  /// (zip со сборкой Windows). Поменяй на свой, если релизы лежат иначе.
-  static const String appRepo = 'Ank01rd/z2-lite';   // было 'Ank01rd/ZapretManager'
+  /// Р РµРїРѕР·РёС‚РѕСЂРёР№, РІ РєРѕС‚РѕСЂРѕРј РїСѓР±Р»РёРєСѓСЋС‚СЃСЏ СЂРµР»РёР·С‹ Р­РўРћР“Рћ РїСЂРёР»РѕР¶РµРЅРёСЏ
+  /// (zip СЃРѕ СЃР±РѕСЂРєРѕР№ Windows). РџРѕРјРµРЅСЏР№ РЅР° СЃРІРѕР№, РµСЃР»Рё СЂРµР»РёР·С‹ Р»РµР¶Р°С‚ РёРЅР°С‡Рµ.
+  static const String appRepo = 'Ank01rd/z2-lite';   // Р±С‹Р»Рѕ 'Ank01rd/ZapretManager'
 
-  /// Текущая версия приложения (синхронизируй с pubspec.yaml).
-  static const String currentAppVersion = '1.0.3';
+  /// РўРµРєСѓС‰Р°СЏ РІРµСЂСЃРёСЏ РїСЂРёР»РѕР¶РµРЅРёСЏ (СЃРёРЅС…СЂРѕРЅРёР·РёСЂСѓР№ СЃ pubspec.yaml).
+  static const String currentAppVersion = '1.0.4';
 
   String _zapretDir = r'C:\zapret_programm';
   String get zapretDir => _zapretDir;
@@ -26,7 +26,7 @@ class ZapretService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── UI-состояние ─────────────────────────────────────────────
+  // в”Ђв”Ђ UI-СЃРѕСЃС‚РѕСЏРЅРёРµ в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
   List<String> _configs = const [];
   bool _running = false;
   bool _busy = false;
@@ -56,7 +56,7 @@ class ZapretService extends ChangeNotifier {
     }
   }
 
-  /// Принудительная синхронизация UI-состояния с диском.
+  /// РџСЂРёРЅСѓРґРёС‚РµР»СЊРЅР°СЏ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ UI-СЃРѕСЃС‚РѕСЏРЅРёСЏ СЃ РґРёСЃРєРѕРј.
   Future<void> syncStatus() async {
     _running = await isRunning();
     _gameFilter = await _readGameFilter();
@@ -64,7 +64,7 @@ class ZapretService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ── сохранённый путь к папке Zapret ──────────────────────────
+  // в”Ђв”Ђ СЃРѕС…СЂР°РЅС‘РЅРЅС‹Р№ РїСѓС‚СЊ Рє РїР°РїРєРµ Zapret в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
   Future<String?> getSavedPath() async {
     final file =
         File('${Platform.environment['APPDATA']}\\Z2Mini\\zapret_path.json');
@@ -83,7 +83,7 @@ class ZapretService extends ChangeNotifier {
     await file.writeAsString(jsonEncode({'path': path}));
   }
 
-  // ── конфиги: все .bat кроме service.bat, сортировка как в проводнике ──
+  // в”Ђв”Ђ РєРѕРЅС„РёРіРё: РІСЃРµ .bat РєСЂРѕРјРµ service.bat, СЃРѕСЂС‚РёСЂРѕРІРєР° РєР°Рє РІ РїСЂРѕРІРѕРґРЅРёРєРµ в”Ђв”Ђ
   Future<List<String>> scanConfigs() async {
     return scanConfigsIn(_zapretDir);
   }
@@ -100,11 +100,11 @@ class ZapretService extends ChangeNotifier {
         }
       }
     }
-    configs.sort(_naturalCompare); // ALT2 раньше ALT10
+    configs.sort(_naturalCompare); // ALT2 СЂР°РЅСЊС€Рµ ALT10
     return configs;
   }
 
-  /// «Проводниковая» сортировка: числа сравниваются как числа
+  /// В«РџСЂРѕРІРѕРґРЅРёРєРѕРІР°СЏВ» СЃРѕСЂС‚РёСЂРѕРІРєР°: С‡РёСЃР»Р° СЃСЂР°РІРЅРёРІР°СЋС‚СЃСЏ РєР°Рє С‡РёСЃР»Р°
   static int _naturalCompare(String a, String b) {
     final re = RegExp(r'(\d+|\D+)');
     final pa = re.allMatches(a).map((m) => m.group(0)!).toList();
@@ -121,7 +121,7 @@ class ZapretService extends ChangeNotifier {
     return pa.length.compareTo(pb.length);
   }
 
-  // ── статус / запуск / остановка / перезапуск ─────────────────
+  // в”Ђв”Ђ СЃС‚Р°С‚СѓСЃ / Р·Р°РїСѓСЃРє / РѕСЃС‚Р°РЅРѕРІРєР° / РїРµСЂРµР·Р°РїСѓСЃРє в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
   Future<bool> isRunning() async {
     try {
       final r = await Process.run(
@@ -169,7 +169,7 @@ class ZapretService extends ChangeNotifier {
     return start(configName);
   }
 
-  // ── Game Filter: utils/game_filter.enabled (all | tcp | udp) ──
+  // в”Ђв”Ђ Game Filter: utils/game_filter.enabled (all | tcp | udp) в”Ђв”Ђ
   Future<String> _readGameFilter() async {
     final f = File('$_zapretDir\\utils\\game_filter.enabled');
     if (!await f.exists()) return 'disabled';
@@ -197,10 +197,10 @@ class ZapretService extends ChangeNotifier {
     }
     await syncStatus();
     if (error != null) return error;
-    return 'Game Filter: ${Loc.mode(mode)} · ${Loc.t('msgApplies')}';
+    return 'Game Filter: ${Loc.mode(mode)} В· ${Loc.t('msgApplies')}';
   }
 
-  // ── IPSet Filter: состояния списка lists/ipset-all.txt ───────
+  // в”Ђв”Ђ IPSet Filter: СЃРѕСЃС‚РѕСЏРЅРёСЏ СЃРїРёСЃРєР° lists/ipset-all.txt в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
   Future<String> _readIpsetStatus() async {
     final f = File('$_zapretDir\\lists\\ipset-all.txt');
     if (!await f.exists()) return 'any';
@@ -288,10 +288,10 @@ class ZapretService extends ChangeNotifier {
 
     await syncStatus();
     if (error != null) return error;
-    return 'IPSet: ${Loc.mode(_ipsetStatus)} · ${Loc.t('msgApplies')}';
+    return 'IPSet: ${Loc.mode(_ipsetStatus)} В· ${Loc.t('msgApplies')}';
   }
 
-  // ── применение фильтров (совместимость со старым API) ────────
+  // в”Ђв”Ђ РїСЂРёРјРµРЅРµРЅРёРµ С„РёР»СЊС‚СЂРѕРІ (СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚СЊ СЃРѕ СЃС‚Р°СЂС‹Рј API) в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
   Future<void> applySettings({
     required String folder,
     required String gameFilter,
@@ -301,7 +301,7 @@ class ZapretService extends ChangeNotifier {
     if (ipsetFilter != _ipsetStatus) await setIpsetFilter(ipsetFilter);
   }
 
-  // ── автозапуск через schtasks ────────────────────────────────
+  // в”Ђв”Ђ Р°РІС‚РѕР·Р°РїСѓСЃРє С‡РµСЂРµР· schtasks в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
   Future<bool> isAutostartInstalled() async {
     try {
       final r = await Process.run(
@@ -358,9 +358,9 @@ class ZapretService extends ChangeNotifier {
     return Loc.t('msgAutostartRemoved');
   }
 
-   /// Полное удаление служб zapret — аналог "Remove Services" из service.bat:
+   /// РџРѕР»РЅРѕРµ СѓРґР°Р»РµРЅРёРµ СЃР»СѓР¶Р± zapret вЂ” Р°РЅР°Р»РѕРі "Remove Services" РёР· service.bat:
   /// net stop + sc delete zapret, taskkill winws, WinDivert, WinDivert14.
-  /// Bat удаляет себя САМ последней строкой, поэтому не ломается на середине.
+  /// Bat СѓРґР°Р»СЏРµС‚ СЃРµР±СЏ РЎРђРњ РїРѕСЃР»РµРґРЅРµР№ СЃС‚СЂРѕРєРѕР№, РїРѕСЌС‚РѕРјСѓ РЅРµ Р»РѕРјР°РµС‚СЃСЏ РЅР° СЃРµСЂРµРґРёРЅРµ.
   Future<String> removeZapretService() async {
     if (_busy) return Loc.t('msgBusy');
     _setBusy(true);
@@ -369,15 +369,15 @@ class ZapretService extends ChangeNotifier {
           File('${Platform.environment['TEMP']}\\z2_remove_service.bat');
       tmp.writeAsStringSync('''
 @echo off
-rem ── служба zapret: остановить и удалить ──
+rem в”Ђв”Ђ СЃР»СѓР¶Р±Р° zapret: РѕСЃС‚Р°РЅРѕРІРёС‚СЊ Рё СѓРґР°Р»РёС‚СЊ в”Ђв”Ђ
 sc query zapret >nul 2>&1
 if %errorlevel%==0 (
   net stop zapret >nul 2>&1
   sc delete zapret >nul 2>&1
 )
-rem ── standalone winws (если запускался через .bat) ──
+rem в”Ђв”Ђ standalone winws (РµСЃР»Рё Р·Р°РїСѓСЃРєР°Р»СЃСЏ С‡РµСЂРµР· .bat) в”Ђв”Ђ
 taskkill /IM winws.exe /F >nul 2>&1
-rem ── драйверы WinDivert ──
+rem в”Ђв”Ђ РґСЂР°Р№РІРµСЂС‹ WinDivert в”Ђв”Ђ
 sc query WinDivert >nul 2>&1
 if %errorlevel%==0 (
   net stop WinDivert >nul 2>&1
@@ -385,18 +385,18 @@ if %errorlevel%==0 (
 )
 net stop WinDivert14 >nul 2>&1
 sc delete WinDivert14 >nul 2>&1
-rem ── контрольный kill: служба могла перезапустить winws ──
+rem в”Ђв”Ђ РєРѕРЅС‚СЂРѕР»СЊРЅС‹Р№ kill: СЃР»СѓР¶Р±Р° РјРѕРіР»Р° РїРµСЂРµР·Р°РїСѓСЃС‚РёС‚СЊ winws в”Ђв”Ђ
 timeout /t 2 /nobreak >nul
 taskkill /IM winws.exe /F >nul 2>&1
-rem ── самоудаление ПОСЛЕ всех команд (cmd читает bat построчно,
-rem    поэтому удалять его из Dart раньше времени нельзя) ──
+rem в”Ђв”Ђ СЃР°РјРѕСѓРґР°Р»РµРЅРёРµ РџРћРЎР›Р• РІСЃРµС… РєРѕРјР°РЅРґ (cmd С‡РёС‚Р°РµС‚ bat РїРѕСЃС‚СЂРѕС‡РЅРѕ,
+rem    РїРѕСЌС‚РѕРјСѓ СѓРґР°Р»СЏС‚СЊ РµРіРѕ РёР· Dart СЂР°РЅСЊС€Рµ РІСЂРµРјРµРЅРё РЅРµР»СЊР·СЏ) в”Ђв”Ђ
 del /f /q "%~f0" >nul 2>nul
 ''');
       await Process.run('powershell', [
         '-Command',
         'Start-Process -FilePath "${tmp.path}" -Verb RunAs -WindowStyle Hidden'
       ]);
-      // ждём завершения скрипта (net stop + timeout 2 + taskkill ≈ 4-5 c)
+      // Р¶РґС‘Рј Р·Р°РІРµСЂС€РµРЅРёСЏ СЃРєСЂРёРїС‚Р° (net stop + timeout 2 + taskkill в‰€ 4-5 c)
       await Future.delayed(const Duration(seconds: 5));
       await syncStatus();
       return Loc.t('msgServiceRemoved');
@@ -407,7 +407,7 @@ del /f /q "%~f0" >nul 2>nul
     }
   }
 
-  // ── обновление IPSet ─────────────────────────────────────────
+  // в”Ђв”Ђ РѕР±РЅРѕРІР»РµРЅРёРµ IPSet в”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђв”Ђ
   Future<String> updateIpset(String folder) async {
     String result;
     try {
@@ -440,11 +440,11 @@ del /f /q "%~f0" >nul 2>nul
     return result;
   }
 
-  // ════════════════════════════════════════════════════════════
-  //  УСТАНОВКА / ОБНОВЛЕНИЕ ZAPRET (работает у любого пользователя)
-  // ════════════════════════════════════════════════════════════
+  // в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+  //  РЈРЎРўРђРќРћР’РљРђ / РћР‘РќРћР’Р›Р•РќРР• ZAPRET (СЂР°Р±РѕС‚Р°РµС‚ Сѓ Р»СЋР±РѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ)
+  // в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 
-  /// Локальная версия zapret из version.txt (если есть).
+  /// Р›РѕРєР°Р»СЊРЅР°СЏ РІРµСЂСЃРёСЏ zapret РёР· version.txt (РµСЃР»Рё РµСЃС‚СЊ).
   Future<String?> zapretLocalVersion() async {
     final f = File('$_zapretDir\\version.txt');
     if (!await f.exists()) return null;
@@ -455,7 +455,7 @@ del /f /q "%~f0" >nul 2>nul
     }
   }
 
-  /// Есть ли более новая версия zapret на GitHub.
+  /// Р•СЃС‚СЊ Р»Рё Р±РѕР»РµРµ РЅРѕРІР°СЏ РІРµСЂСЃРёСЏ zapret РЅР° GitHub.
   Future<bool> isZapretUpdateAvailable() async {
     try {
       final client = HttpClient()
@@ -472,19 +472,19 @@ del /f /q "%~f0" >nul 2>nul
       client.close();
       final latest = '${data['tag_name']}'.replaceFirst(RegExp('^v'), '');
       final local = await zapretLocalVersion();
-      if (local == null) return true; // версии нет — считаем, что обновление нужно
+      if (local == null) return true; // РІРµСЂСЃРёРё РЅРµС‚ вЂ” СЃС‡РёС‚Р°РµРј, С‡С‚Рѕ РѕР±РЅРѕРІР»РµРЅРёРµ РЅСѓР¶РЅРѕ
       return _isNewer(latest, local.replaceFirst(RegExp('^v'), ''));
     } catch (_) {
       return false;
     }
   }
 
-  /// Скачивает последний релиз Zapret и устанавливает в [folder]:
-  ///  1) качает zip релиза;
-  ///  2) распаковывает во временную папку (чистый Dart → PowerShell → tar);
-  ///  3) если внутри одна корневая папка — сливает её содержимое с [folder];
-  ///  4) дополнительно поднимает любые вложенные zapret-discord-youtube-*;
-  ///  5) проверяет, что появились .bat-конфиги, и пишет version.txt.
+  /// РЎРєР°С‡РёРІР°РµС‚ РїРѕСЃР»РµРґРЅРёР№ СЂРµР»РёР· Zapret Рё СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РІ [folder]:
+  ///  1) РєР°С‡Р°РµС‚ zip СЂРµР»РёР·Р°;
+  ///  2) СЂР°СЃРїР°РєРѕРІС‹РІР°РµС‚ РІРѕ РІСЂРµРјРµРЅРЅСѓСЋ РїР°РїРєСѓ (С‡РёСЃС‚С‹Р№ Dart в†’ PowerShell в†’ tar);
+  ///  3) РµСЃР»Рё РІРЅСѓС‚СЂРё РѕРґРЅР° РєРѕСЂРЅРµРІР°СЏ РїР°РїРєР° вЂ” СЃР»РёРІР°РµС‚ РµС‘ СЃРѕРґРµСЂР¶РёРјРѕРµ СЃ [folder];
+  ///  4) РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РїРѕРґРЅРёРјР°РµС‚ Р»СЋР±С‹Рµ РІР»РѕР¶РµРЅРЅС‹Рµ zapret-discord-youtube-*;
+  ///  5) РїСЂРѕРІРµСЂСЏРµС‚, С‡С‚Рѕ РїРѕСЏРІРёР»РёСЃСЊ .bat-РєРѕРЅС„РёРіРё, Рё РїРёС€РµС‚ version.txt.
   Future<String> downloadZapret(String folder,
       {void Function(double? p, String stage)? onProgress}) async {
     if (_busy) return Loc.t('msgBusy');
@@ -516,7 +516,7 @@ del /f /q "%~f0" >nul 2>nul
       await Directory(folder).create(recursive: true);
       final zipPath = '$folder\\zapret_download.zip';
 
-      // ── скачивание с прогрессом ──
+      // в”Ђв”Ђ СЃРєР°С‡РёРІР°РЅРёРµ СЃ РїСЂРѕРіСЂРµСЃСЃРѕРј в”Ђв”Ђ
       final dl = await client.getUrl(Uri.parse(url));
       dl.headers.set('User-Agent', 'Z2-Mini');
       final dlResp = await dl.close();
@@ -532,24 +532,24 @@ del /f /q "%~f0" >nul 2>nul
           if (pct != lastPct) {
             lastPct = pct;
             onProgress?.call(
-                pct / 100, '${Loc.t('msgDownloading')} $version · $pct%');
+                pct / 100, '${Loc.t('msgDownloading')} $version В· $pct%');
             await Future.delayed(const Duration(milliseconds: 50));
           }
         } else {
           onProgress?.call(null,
-              '${Loc.t('msgDownloading')} $version… ${received ~/ 1048576} MB');
+              '${Loc.t('msgDownloading')} $versionвЂ¦ ${received ~/ 1048576} MB');
         }
       }
       await sink.close();
 
-      // ── распаковка во временную папку: 3 способа подряд ──
+      // в”Ђв”Ђ СЂР°СЃРїР°РєРѕРІРєР° РІРѕ РІСЂРµРјРµРЅРЅСѓСЋ РїР°РїРєСѓ: 3 СЃРїРѕСЃРѕР±Р° РїРѕРґСЂСЏРґ в”Ђв”Ђ
       onProgress?.call(null, Loc.t('msgExtracting'));
       if (tmpDir.existsSync()) tmpDir.deleteSync(recursive: true);
       tmpDir.createSync(recursive: true);
 
       var extracted = false;
       try {
-        _unzipPureDart(zipPath, tmpDir.path); // 1) чистый Dart — работает всегда
+        _unzipPureDart(zipPath, tmpDir.path); // 1) С‡РёСЃС‚С‹Р№ Dart вЂ” СЂР°Р±РѕС‚Р°РµС‚ РІСЃРµРіРґР°
         extracted = true;
       } catch (_) {}
       if (!extracted) {
@@ -563,11 +563,11 @@ del /f /q "%~f0" >nul 2>nul
       if (!extracted) {
         final tar =
             await Process.run('tar', ['-xf', zipPath, '-C', tmpDir.path]);
-        extracted = tar.exitCode == 0; // 3) tar (есть в Windows 10+)
+        extracted = tar.exitCode == 0; // 3) tar (РµСЃС‚СЊ РІ Windows 10+)
       }
       if (!extracted) return Loc.t('msgUnpack');
 
-      // ── перенос в целевую папку (flatten одиночного корня) ──
+      // в”Ђв”Ђ РїРµСЂРµРЅРѕСЃ РІ С†РµР»РµРІСѓСЋ РїР°РїРєСѓ (flatten РѕРґРёРЅРѕС‡РЅРѕРіРѕ РєРѕСЂРЅСЏ) в”Ђв”Ђ
       onProgress?.call(null, Loc.t('msgInstalling'));
       final entries = tmpDir.listSync();
       final singleRoot =
@@ -575,7 +575,7 @@ del /f /q "%~f0" >nul 2>nul
               ? entries.single as Directory
               : tmpDir;
       await _moveInto(singleRoot, Directory(folder));
-      await _flatten(folder); // поднимем zapret-discord-youtube-* если остались
+      await _flatten(folder); // РїРѕРґРЅРёРјРµРј zapret-discord-youtube-* РµСЃР»Рё РѕСЃС‚Р°Р»РёСЃСЊ
 
       try {
         tmpDir.deleteSync(recursive: true);
@@ -584,7 +584,7 @@ del /f /q "%~f0" >nul 2>nul
         await File(zipPath).delete();
       } catch (_) {}
 
-      // ── проверка целостности: конфиги или winws.exe на месте ──
+      // в”Ђв”Ђ РїСЂРѕРІРµСЂРєР° С†РµР»РѕСЃС‚РЅРѕСЃС‚Рё: РєРѕРЅС„РёРіРё РёР»Рё winws.exe РЅР° РјРµСЃС‚Рµ в”Ђв”Ђ
       final ok = (await scanConfigsIn(folder)).isNotEmpty ||
           await File('$folder\\bin\\winws.exe').exists();
       if (!ok) return Loc.t('msgUnpack');
@@ -602,14 +602,14 @@ del /f /q "%~f0" >nul 2>nul
     }
   }
 
-  /// Распаковка zip средствами Dart (пакет archive) — не зависит
-  /// от PowerShell/tar/прав пользователя. С защитой от zip-slip.
+  /// Р Р°СЃРїР°РєРѕРІРєР° zip СЃСЂРµРґСЃС‚РІР°РјРё Dart (РїР°РєРµС‚ archive) вЂ” РЅРµ Р·Р°РІРёСЃРёС‚
+  /// РѕС‚ PowerShell/tar/РїСЂР°РІ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ. РЎ Р·Р°С‰РёС‚РѕР№ РѕС‚ zip-slip.
   void _unzipPureDart(String zipPath, String destDir) {
     final bytes = File(zipPath).readAsBytesSync();
     final archive = ZipDecoder().decodeBytes(bytes);
     for (final file in archive) {
       final name = file.name.replaceAll('/', '\\');
-      if (name.contains('..')) continue; // zip-slip защита
+      if (name.contains('..')) continue; // zip-slip Р·Р°С‰РёС‚Р°
       final outPath = '$destDir\\$name';
       if (file.isFile) {
         File(outPath)
@@ -621,8 +621,8 @@ del /f /q "%~f0" >nul 2>nul
     }
   }
 
-  /// Если после распаковки остались вложенные папки релиза
-  /// (zapret-discord-youtube-x.y.z) — сливаем их содержимое с корнем.
+  /// Р•СЃР»Рё РїРѕСЃР»Рµ СЂР°СЃРїР°РєРѕРІРєРё РѕСЃС‚Р°Р»РёСЃСЊ РІР»РѕР¶РµРЅРЅС‹Рµ РїР°РїРєРё СЂРµР»РёР·Р°
+  /// (zapret-discord-youtube-x.y.z) вЂ” СЃР»РёРІР°РµРј РёС… СЃРѕРґРµСЂР¶РёРјРѕРµ СЃ РєРѕСЂРЅРµРј.
   Future<void> _flatten(String dir) async {
     for (var pass = 0; pass < 2; pass++) {
       final root = Directory(dir);
@@ -647,8 +647,8 @@ del /f /q "%~f0" >nul 2>nul
     }
   }
 
-  /// Рекурсивно переносит содержимое src в dst, сливая папки
-  /// и заменяя файлы.
+  /// Р РµРєСѓСЂСЃРёРІРЅРѕ РїРµСЂРµРЅРѕСЃРёС‚ СЃРѕРґРµСЂР¶РёРјРѕРµ src РІ dst, СЃР»РёРІР°СЏ РїР°РїРєРё
+  /// Рё Р·Р°РјРµРЅСЏСЏ С„Р°Р№Р»С‹.
   Future<void> _moveInto(Directory src, Directory dst) async {
     for (final e in src.listSync()) {
       final name = e.path.replaceAll('\\', '/').split('/').last;
@@ -668,11 +668,11 @@ del /f /q "%~f0" >nul 2>nul
     }
   }
 
-  // ════════════════════════════════════════════════════════════
-  //  OTA-ОБНОВЛЕНИЯ САМОГО ПРИЛОЖЕНИЯ (Z2 Mini Lite)
-  // ════════════════════════════════════════════════════════════
+  // в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+  //  OTA-РћР‘РќРћР’Р›Р•РќРРЇ РЎРђРњРћР“Рћ РџР РР›РћР–Р•РќРРЇ (Z2 Mini Lite)
+  // в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
 
-  /// Сравнение версий вида 1.5.0 / v1.6.2.
+  /// РЎСЂР°РІРЅРµРЅРёРµ РІРµСЂСЃРёР№ РІРёРґР° 1.5.0 / v1.6.2.
   static bool _isNewer(String latest, String current) {
     List<int> parse(String s) => s
         .split('.')
@@ -688,7 +688,7 @@ del /f /q "%~f0" >nul 2>nul
     return false;
   }
 
-  /// Есть ли новая версия приложения (без установки).
+  /// Р•СЃС‚СЊ Р»Рё РЅРѕРІР°СЏ РІРµСЂСЃРёСЏ РїСЂРёР»РѕР¶РµРЅРёСЏ (Р±РµР· СѓСЃС‚Р°РЅРѕРІРєРё).
   Future<String?> checkAppUpdateTag() async {
     try {
       final client = HttpClient()
@@ -715,7 +715,7 @@ del /f /q "%~f0" >nul 2>nul
     return '${Loc.t('msgLatestZ2')}: $tag';
   }
 
-  /// Проверка обновлений самого Zapret (Flowseal).
+  /// РџСЂРѕРІРµСЂРєР° РѕР±РЅРѕРІР»РµРЅРёР№ СЃР°РјРѕРіРѕ Zapret (Flowseal).
   Future<String> checkZapretUpdate() async {
     try {
       final client = HttpClient()
@@ -736,13 +736,13 @@ del /f /q "%~f0" >nul 2>nul
     }
   }
 
-  /// OTA-обновление приложения:
-  ///  1) сверяет версию с последним релизом [appRepo];
-  ///  2) качает zip-сборку Windows в %TEMP%\z2mini_update;
-  ///  3) распаковывает (Dart → PowerShell → tar);
-  ///  4) создаёт update.bat, который дожидается выхода программы,
-  ///     заменяет файлы в папке exe и перезапускает приложение;
-  ///  5) запускает bat и завершает текущий процесс.
+  /// OTA-РѕР±РЅРѕРІР»РµРЅРёРµ РїСЂРёР»РѕР¶РµРЅРёСЏ:
+  ///  1) СЃРІРµСЂСЏРµС‚ РІРµСЂСЃРёСЋ СЃ РїРѕСЃР»РµРґРЅРёРј СЂРµР»РёР·РѕРј [appRepo];
+  ///  2) РєР°С‡Р°РµС‚ zip-СЃР±РѕСЂРєСѓ Windows РІ %TEMP%\z2mini_update;
+  ///  3) СЂР°СЃРїР°РєРѕРІС‹РІР°РµС‚ (Dart в†’ PowerShell в†’ tar);
+  ///  4) СЃРѕР·РґР°С‘С‚ update.bat, РєРѕС‚РѕСЂС‹Р№ РґРѕР¶РёРґР°РµС‚СЃСЏ РІС‹С…РѕРґР° РїСЂРѕРіСЂР°РјРјС‹,
+  ///     Р·Р°РјРµРЅСЏРµС‚ С„Р°Р№Р»С‹ РІ РїР°РїРєРµ exe Рё РїРµСЂРµР·Р°РїСѓСЃРєР°РµС‚ РїСЂРёР»РѕР¶РµРЅРёРµ;
+  ///  5) Р·Р°РїСѓСЃРєР°РµС‚ bat Рё Р·Р°РІРµСЂС€Р°РµС‚ С‚РµРєСѓС‰РёР№ РїСЂРѕС†РµСЃСЃ.
   Future<String> installAppUpdate(
       {void Function(double? p, String stage)? onProgress}) async {
     final client = HttpClient()
@@ -786,7 +786,7 @@ del /f /q "%~f0" >nul 2>nul
       tmp.createSync(recursive: true);
       final zipPath = '${tmp.path}\\update.zip';
 
-      // ── скачивание ──
+      // в”Ђв”Ђ СЃРєР°С‡РёРІР°РЅРёРµ в”Ђв”Ђ
       final dl = await client.getUrl(Uri.parse(url));
       dl.headers.set('User-Agent', 'Z2-Mini');
       final dlResp = await dl.close();
@@ -802,15 +802,15 @@ del /f /q "%~f0" >nul 2>nul
           if (pct != lastPct) {
             lastPct = pct;
             onProgress?.call(
-                pct / 100, '${Loc.t('msgDownloading')} $tag · $pct%');
+                pct / 100, '${Loc.t('msgDownloading')} $tag В· $pct%');
           }
         } else {
-          onProgress?.call(null, '${Loc.t('msgDownloading')} $tag…');
+          onProgress?.call(null, '${Loc.t('msgDownloading')} $tagвЂ¦');
         }
       }
       await sink.close();
 
-      // ── распаковка ──
+      // в”Ђв”Ђ СЂР°СЃРїР°РєРѕРІРєР° в”Ђв”Ђ
       onProgress?.call(null, Loc.t('msgExtracting'));
       final newDir = Directory('${tmp.path}\\new')..createSync(recursive: true);
       var extracted = false;
@@ -837,14 +837,14 @@ del /f /q "%~f0" >nul 2>nul
           ? (entries.single as Directory).path
           : newDir.path;
 
-      // ── bat-апдейтер: ждёт выхода программы → меняет файлы → старт ──
+      // в”Ђв”Ђ bat-Р°РїРґРµР№С‚РµСЂ: Р¶РґС‘С‚ РІС‹С…РѕРґР° РїСЂРѕРіСЂР°РјРјС‹ в†’ РјРµРЅСЏРµС‚ С„Р°Р№Р»С‹ в†’ СЃС‚Р°СЂС‚ в”Ђв”Ђ
       final exe = File(Platform.resolvedExecutable);
       final appDir = exe.parent.path;
       final exeName = exe.uri.pathSegments.last;
       final bat = File('${tmp.path}\\update.bat');
-      // CRLF-переносы (cmd.exe требует именно их), БЕЗ самоудаления
-      // (удаление выполняемого bat роняет cmd в зависание),
-      // лимит 30 попыток (не висим вечно), окно скрытое.
+      // CRLF-РїРµСЂРµРЅРѕСЃС‹ (cmd.exe С‚СЂРµР±СѓРµС‚ РёРјРµРЅРЅРѕ РёС…), Р‘Р•Р— СЃР°РјРѕСѓРґР°Р»РµРЅРёСЏ
+      // (СѓРґР°Р»РµРЅРёРµ РІС‹РїРѕР»РЅСЏРµРјРѕРіРѕ bat СЂРѕРЅСЏРµС‚ cmd РІ Р·Р°РІРёСЃР°РЅРёРµ),
+      // Р»РёРјРёС‚ 30 РїРѕРїС‹С‚РѕРє (РЅРµ РІРёСЃРёРј РІРµС‡РЅРѕ), РѕРєРЅРѕ СЃРєСЂС‹С‚РѕРµ.
       final batLines = [
         '@echo off',
         'setlocal',
@@ -874,7 +874,7 @@ del /f /q "%~f0" >nul 2>nul
         'Start-Process -FilePath "${bat.path}" -WindowStyle Hidden'
       ]);
       await Future.delayed(const Duration(milliseconds: 400));
-      exit(0); // апдейтер подхватит после выхода
+      exit(0); // Р°РїРґРµР№С‚РµСЂ РїРѕРґС…РІР°С‚РёС‚ РїРѕСЃР»Рµ РІС‹С…РѕРґР°
     } catch (e) {
       return '${Loc.t('msgError')}: $e';
     } finally {
