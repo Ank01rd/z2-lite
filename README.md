@@ -1,97 +1,135 @@
 # Z2 Lite
 
-Z2 Lite is a lightweight Windows desktop application for managing Zapret through a compact graphical interface.
+**Z2 Lite** — компактное приложение для Windows с графическим интерфейсом для управления **Zapret** и связанными инструментами.
 
-## Features
+Проект создан для того, чтобы запускать, останавливать и настраивать необходимые компоненты через удобный интерфейс, не работая постоянно с консолью.
 
-- Start, stop and restart Zapret
-- Select and manage Zapret configurations
-- Game Filter and IPSet management
-- IPSet updates
-- Zapret download and update checks
-- Zapret automatic startup management
-- Windows application auto-start
-- Minimalistic desktop interface
-- Dark and light themes
-- Smooth scrolling and lightweight UI animations
-- Russian and English localization
-- Built-in update support
-- Maya architecture for application, process, filter and update management
+## Возможности
 
-## Requirements
+### 🛡 Zapret
 
-- Windows 10 or newer
-- Internet connection for downloading and updating components
+- запуск и остановка защиты;
+- перезапуск выбранной конфигурации;
+- выбор конфигурации;
+- управление Game Filter;
+- управление IPSet;
+- обновление IPSet;
+- загрузка и обновление Zapret;
+- настройка автоматического запуска Zapret;
+- автоматический запуск самого приложения вместе с Windows.
 
-For building from source:
+### ✈️ Telegram
 
-- Flutter SDK
-- Visual Studio with the Windows desktop development workload
-- Windows SDK
+В версии **1.0.6** в проект интегрирован **TG WS Proxy**.
 
-## Build
+Telegram-функционал вынесен в отдельный раздел приложения:
 
-Clone the repository:
+- запуск и остановка TG WS Proxy;
+- просмотр состояния прокси;
+- подключение Telegram через прокси-ссылку;
+- копирование ссылки подключения;
+- просмотр логов;
+- управление прокси без ручного запуска отдельных команд.
+
+### 🎨 Интерфейс
+
+Z2 Lite использует компактный минималистичный интерфейс.
+
+Навигация разделена на три основные страницы:
+
+- **Главная** — основные действия и управление Zapret;
+- **Настройки** — параметры приложения;
+- **Телеграмм** — весь функционал TG WS Proxy.
+
+Доступны тёмная и светлая темы, плавная прокрутка, анимации интерфейса и несколько языков.
+
+### 🧩 Maya
+
+В проекте используется архитектура **Maya**, объединяющая работу приложения с процессами, конфигурациями, фильтрами, обновлениями и состоянием защиты.
+
+## Требования
+
+Для запуска готовой Windows-сборки:
+
+- Windows 10 или новее.
+
+Для сборки из исходников:
+
+- Flutter SDK;
+- Visual Studio с компонентами для разработки Windows Desktop на C++;
+- Windows SDK.
+
+## Сборка из исходников
+
+Клонируйте репозиторий:
 
 ```bash
 git clone https://github.com/Ank01rd/z2-lite.git
 cd z2-lite
 ```
 
-Install dependencies:
+Установите зависимости:
 
 ```bash
 flutter pub get
 ```
 
-Run the application:
+Запустите приложение:
 
 ```bash
 flutter run -d windows
 ```
 
-Build a release:
+Соберите Release:
 
 ```bash
 flutter build windows --release
 ```
 
-The release output is generated in:
+Готовая сборка будет находиться в:
 
 ```text
 build/windows/x64/runner/Release/
 ```
 
-## Project structure
+## Структура проекта
 
 ```text
-assets/      # UI assets
+assets/             # иконки и ресурсы интерфейса
 lib/
-├── core/    # Settings, theme, localization and utilities
-├── maya/    # Maya application architecture
-├── services/ # Zapret services and process management
-└── ui/      # Pages and reusable widgets
-windows/     # Windows runner
+├── core/           # настройки, локализация, тема и общие компоненты
+├── maya/           # Maya
+├── services/       # сервисы и работа с процессами
+└── ui/             # страницы и виджеты интерфейса
+windows/            # Windows runner
 ```
 
-## Current version
+## Версия
 
-**1.0.5**
+**Текущая версия: 1.0.6**
 
-The changelog is maintained in:
+Последние сборки публикуются в разделе **GitHub Releases**:
 
-```text
-lib/core/changelog.dart
-```
+https://github.com/Ank01rd/z2-lite/releases
 
-## Repository policy
+## TG WS Proxy
 
-The repository is intended to contain source code and project resources.
+TG WS Proxy распространяется как часть функциональности Z2 Lite и используется для работы с Telegram через встроенное управление прокси.
 
-Build artifacts and local backups should not be committed to Git. Release archives belong in GitHub Releases rather than in the source tree.
+Сам TG WS Proxy разработан проектом Flowseal:
 
-The current source release **does not include TG WS Proxy**. That feature is being developed separately and is not part of this source update.
+https://github.com/Flowseal/tg-ws-proxy
 
-## License
+## Архивы и сборки
 
-See the `LICENSE` file included with the repository.
+Репозиторий содержит исходный код проекта.
+
+Большие ZIP/RAR/7Z-файлы, резервные копии и другие локальные артефакты не должны храниться в исходном дереве. Готовые сборки публикуются через **GitHub Releases**.
+
+## Обратная связь
+
+Баги, предложения и проблемы с работой приложения можно сообщать через GitHub Issues.
+
+---
+
+**Z2 Lite** · Windows · Zapret · Telegram
